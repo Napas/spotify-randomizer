@@ -1,0 +1,73 @@
+service: spotify-randomizer
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: prod
+  region: eu-west-1
+  memorySize: 256
+  environment:
+    SPOTIFY_CLIENT_ID: "client_id"
+    SPOTIFY_CLIENT_SECRET: "client_secret"
+    DYNAMODB_TABLE_NAME: "SpotifyRandomizer"
+    SPOTIFY_CALLBACK_URL:
+      Fn::Join:
+        - ""
+        - - "https://"
+          - Ref: "ApiGatewayRestApi"
+          - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}/callback"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}"
+
+functions:
+  login:
+    handler: handler.login
+    events:
+      - http:
+          path: login
+          method: get
+  callback:
+    handler: handler.callback
+    events:
+      - http:
+          path: callback
+          method: get
+          queryStrings:
+            code: true
+            state: true
+  refreshToken:
+    handler: handler.refreshToken
+    events:
+      - schedule:
+          rate: rate(59 minutes)
+  shuffle:
+    handler: handler.shuffle
+    environment:
+      PLAYLIST_ID: "playlist_id"
+    events:
+      - schedule:
+          rate: rate(1 minute)
+
+resources:
+  Resources:
+    SpotifyRandomizerTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        TableName: "${self:provider.environment.DYNAMODB_TABLE_NAME}"
+        BillingMode: PAY_PER_REQUEST

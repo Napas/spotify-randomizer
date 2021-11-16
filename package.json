@@ -9,7 +9,7 @@
   "author": "Mindaugas Mačiulaitis <napas@napas.lt>",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.517.0",
+    "aws-sdk": "^2.814.0",
     "spotify-web-api-node": "^4.0.0"
   }
 }

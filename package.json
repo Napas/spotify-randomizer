@@ -1,6 +1,6 @@
 {
   "name": "spotify-randomizer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "handler.js",
   "scripts": {
@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.517.0",
-    "spotify-web-api-node": "^4.0.0"
+    "spotify-web-api-node": "^5.0.0"
   }
 }

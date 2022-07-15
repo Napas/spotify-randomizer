@@ -16,7 +16,7 @@ const DynamoRepository = require('./tokenRepo');
 const tokenRepo = new DynamoRepository(dynamo, process.env.DYNAMODB_TABLE_NAME);
 
 const errResponse = {
-    statusCode: 200,
+    statusCode: 500,
     headers: {
         'content-type': 'text/html',
     },
@@ -122,11 +122,20 @@ module.exports.shuffle = async event => {
             '"'
         );
 
-        const resp = await spotifyApi.reorderTracksInPlaylist(playlistId, start, position, {range_length: rangeLength});
+        const resp = await spotifyApi.reorderTracksInPlaylist(
+          playlistId,
+          start,
+          position,
+          {
+              range_length: rangeLength
+          },
+        );
 
         console.log(resp);
     } catch (err) {
         console.log(err)
+
+      throw err
     }
 };
 

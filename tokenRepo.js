@@ -20,8 +20,8 @@ module.exports = class {
             },
         ];
 
-        if (tokenData.refreshToken) {
-            requestItems[this.tableName].append(
+        if (tokenData.body['refresh_token']) {
+            requestItems[this.tableName].push(
                 {
                     PutRequest: {
                         Item: {
